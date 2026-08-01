@@ -17,8 +17,12 @@
   <div class="install-banner" role="region" aria-label="PWA install">
     <p class="install-banner-text">Install Memo to your home screen for app-like access.</p>
     <button id="install-btn" class="install-action">Add to Home screen</button>
-    <span id="install-text">Open this menu to install if the browser prompt does not appear.</span>
+    <span id="install-text">Install prompt may not appear on desktop; use mobile Chrome if needed.</span>
   </div>
+
+  <section>
+    <p style="margin-top:0; color:#555; font-size:14px;">If the prompt does not appear, open Chrome menu and select "Add to Home screen" on Android.</p>
+  </section>
 
   <ul>
     <li><a href="./notes.html">Notes</a></li>
@@ -47,7 +51,7 @@
     });
 
     const showMenuFallback = () => {
-      installText.textContent = "If the prompt does not appear, use your browser menu to Add to Home screen.";
+      installText.textContent = "Install prompt is only available on mobile Chrome. Use the browser menu if needed.";
     };
 
     const promptInstall = async (textElement, containerElement) => {
