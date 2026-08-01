@@ -43,17 +43,12 @@
     const installBtnAuto = document.getElementById("install-btn-auto");
     const installTextAuto = document.getElementById("install-text-auto");
 
+    installBtn.disabled = true;
+    installBtn.classList.add("disabled");
+
     const isAndroidChrome = () => {
       const ua = navigator.userAgent.toLowerCase();
       return ua.includes("android") && ua.includes("chrome") && !ua.includes("edg") && !ua.includes("opr") && !ua.includes("crios");
-    };
-
-    const updateInstallUI = () => {
-      if (!isAndroidChrome()) {
-        installText.textContent = "Use Android Chrome for Add to Home screen. Desktop browsers are not installable.";
-      } else {
-        installText.textContent = "Tap Add to Home screen when the browser prompt is available.";
-      }
     };
 
     const updateInstallUI = () => {
