@@ -19,7 +19,43 @@
     <li><a href="./tasks.html">Tasks</a></li>
     <li><a href="./about.html">About</a></li>
   </ul>
+
+  <div id="install-prompt" class="install-prompt hidden" role="dialog" aria-live="polite">
+    <span>Install Memo to your home screen</span>
+    <button id="install-button" class="install-action">Add to Home screen</button>
+    <button id="install-close" class="install-close" aria-label="Close">×</button>
+  </div>
+
   <script>
+    let deferredInstallPrompt = null;
+    const installPrompt = document.getElementById("install-prompt");
+    const installButton = document.getElementById("install-button");
+    const installClose = document.getElementById("install-close");
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installPrompt.classList.remove("hidden");
+    });
+
+    installButton.addEventListener("click", async () => {
+      if (!deferredInstallPrompt) return;
+      deferredInstallPrompt.prompt();
+      const choiceResult = await deferredInstallPrompt.userChoice;
+      console.log("Install prompt result:", choiceResult.outcome);
+      deferredInstallPrompt = null;
+      installPrompt.classList.add("hidden");
+    });
+
+    installClose.addEventListener("click", () => {
+      installPrompt.classList.add("hidden");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      console.log("PWA installed");
+      installPrompt.classList.add("hidden");
+    });
+
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("/service-worker.js")
