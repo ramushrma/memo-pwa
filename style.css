@@ -61,6 +61,11 @@ body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
   background:#1949b4;
 }
 
+.install-action.disabled{
+  background:#9ca3af;
+  cursor:not-allowed;
+}
+
 @media(max-width:480px){
   .install-container{
     right:10px;

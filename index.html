@@ -17,11 +17,11 @@
   <div class="install-banner" role="region" aria-label="PWA install">
     <p class="install-banner-text">Install Memo to your home screen for app-like access.</p>
     <button id="install-btn" class="install-action">Add to Home screen</button>
-    <span id="install-text">Install prompt may not appear on desktop; use mobile Chrome if needed.</span>
+    <span id="install-text">Open this page in Android Chrome to use the install prompt.</span>
   </div>
 
   <section>
-    <p style="margin-top:0; color:#555; font-size:14px;">If the prompt does not appear, open Chrome menu and select "Add to Home screen" on Android.</p>
+    <p style="margin-top:0; color:#555; font-size:14px;">If the prompt does not appear, use Chrome mobile menu → Add to Home screen.</p>
   </section>
 
   <ul>
@@ -50,8 +50,25 @@
       installContainer.classList.remove("hidden");
     });
 
+    const isAndroidChrome = () => {
+      const ua = navigator.userAgent.toLowerCase();
+      return ua.includes("android") && ua.includes("chrome") && !ua.includes("edg") && !ua.includes("opr") && !ua.includes("crios");
+    };
+
+    const updateInstallUI = () => {
+      if (!isAndroidChrome()) {
+        installText.textContent = "Install works only on Android Chrome. Use Chrome mobile menu → Add to Home screen.";
+        installBtn.disabled = true;
+        installBtn.classList.add("disabled");
+      } else {
+        installText.textContent = "Tap Add to Home screen when the browser prompt is available.";
+        installBtn.disabled = false;
+        installBtn.classList.remove("disabled");
+      }
+    };
+
     const showMenuFallback = () => {
-      installText.textContent = "Install prompt is only available on mobile Chrome. Use the browser menu if needed.";
+      installText.textContent = "Install prompt not available. Use Chrome mobile menu → Add to Home screen.";
     };
 
     const promptInstall = async (textElement, containerElement) => {
@@ -74,13 +91,50 @@
       if (containerElement) containerElement.classList.add("hidden");
     };
 
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      deferredInstallPrompt = event;
+      installText.textContent = "Install ready! Tap Add to Home screen.";
+      installBtn.disabled = false;
+      installBtn.classList.remove("disabled");
+      installContainer.classList.remove("hidden");
+    });
+
     installBtn.addEventListener("click", () => promptInstall(installText, installContainer));
     installBtnAuto.addEventListener("click", () => promptInstall(installTextAuto, installContainer));
 
     window.addEventListener("appinstalled", () => {
       console.log("PWA installed");
       installContainer.classList.add("hidden");
+      installText.textContent = "App installed. Open it from your home screen.";
     });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", async () => {
+        updateInstallUI();
+        try {
+          const registration = await navigator.serviceWorker.register("/service-worker.js");
+          console.log("Service worker registered", registration.scope);
+
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          }
+
+          registration.addEventListener("updatefound", () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                window.location.reload();
+              }
+            });
+          });
+        } catch (error) {
+          console.error("Service worker registration failed", error);
+        }
+      });
+    } else {
+      updateInstallUI();
+    }
 
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", async () => {
