@@ -167,14 +167,10 @@
   window.addEventListener('beforeinstallprompt', (e) => {
     console.log('[PWA] beforeinstallprompt fired');
     
-    // CRITICAL FIX: Don't preventDefault unless we handle it properly
-    // We want the banner to show automatically
-    // e.preventDefault(); // COMMENT THIS OUT - Let Chrome show banner
-    
-    // Store the prompt for later use
+    // Prevent the default prompt so we can show our custom install UI
+    e.preventDefault();
     deferredPrompt = e;
     
-    // Show our custom banner
     installBanner.classList.remove('hidden');
     status.textContent = '📱 Tap "Install" to add to home screen';
     console.log('[PWA] Install prompt ready - banner showing');
