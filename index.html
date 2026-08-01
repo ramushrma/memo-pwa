@@ -43,16 +43,17 @@
     const installBtnAuto = document.getElementById("install-btn-auto");
     const installTextAuto = document.getElementById("install-text-auto");
 
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      deferredInstallPrompt = event;
-      installText.textContent = "Add Memo to your home screen";
-      installContainer.classList.remove("hidden");
-    });
-
     const isAndroidChrome = () => {
       const ua = navigator.userAgent.toLowerCase();
       return ua.includes("android") && ua.includes("chrome") && !ua.includes("edg") && !ua.includes("opr") && !ua.includes("crios");
+    };
+
+    const updateInstallUI = () => {
+      if (!isAndroidChrome()) {
+        installText.textContent = "Use Android Chrome for Add to Home screen. Desktop browsers are not installable.";
+      } else {
+        installText.textContent = "Tap Add to Home screen when the browser prompt is available.";
+      }
     };
 
     const updateInstallUI = () => {
@@ -134,30 +135,6 @@
       });
     } else {
       updateInstallUI();
-    }
-
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async () => {
-        try {
-          const registration = await navigator.serviceWorker.register("/service-worker.js");
-          console.log("Service worker registered", registration.scope);
-
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: "SKIP_WAITING" });
-          }
-
-          registration.addEventListener("updatefound", () => {
-            const newWorker = registration.installing;
-            newWorker.addEventListener("statechange", () => {
-              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                window.location.reload();
-              }
-            });
-          });
-        } catch (error) {
-          console.error("Service worker registration failed", error);
-        }
-      });
     }
   </script>
 </body>
