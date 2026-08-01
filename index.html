@@ -94,8 +94,8 @@
   <p>Your notes &amp; tasks</p>
 </header>
 
-<!-- Install Banner - Always shown on Android -->
-<div class="install-banner" id="installBanner">
+<!-- Install Banner - Shown only when prompt is available -->
+<div class="install-banner hidden" id="installBanner">
   <span style="font-size: 32px;">📱</span>
   <div class="install-text">
     <strong>Install Memo</strong>
@@ -220,14 +220,8 @@
   // ============================================
   
   function showManualInstall() {
-    status.textContent = '📱 Tap Chrome menu ⋮ → "Add to Home screen"';
-    alert(
-      'To install Memo:\n\n' +
-      '1. Tap the ⋮ menu in Chrome\n' +
-      '2. Select "Add to Home screen"\n' +
-      '3. Tap "Add"\n\n' +
-      'The app will appear on your home screen!'
-    );
+    status.textContent = '⚠️ Install not available right now';
+    installBanner.classList.add('hidden');
   }
 
   // ============================================
@@ -265,9 +259,9 @@
   
   setTimeout(() => {
     if (!deferredPrompt && !isInstalled) {
-      console.log('[PWA] No install prompt after 3s, showing manual');
-      installBanner.classList.remove('hidden');
-      status.textContent = '📱 Tap "Install" or use Chrome menu';
+      console.log('[PWA] No install prompt available');
+      installBanner.classList.add('hidden');
+      status.textContent = '⚠️ Install not available right now';
     }
   }, 3000);
 
