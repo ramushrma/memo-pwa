@@ -1,124 +1,341 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Memo">
-  <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/icon-192.png" type="image/png">
-  <link rel="stylesheet" href="./style.css">
+  <meta name="description" content="Memo - Your personal notes and tasks">
+  
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons -->
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+  
   <title>Memo PWA</title>
 </head>
 <body>
-  <h2>Home</h2>
-  <p>All assets use relative paths for reliable deployment.</p>
-  <div class="install-banner" role="region" aria-label="PWA install">
-    <p class="install-banner-text">Install Memo to your home screen for app-like access.</p>
-    <button id="install-btn" class="install-action">Add to Home screen</button>
-    <span id="install-text">Open this page in Android Chrome to use the install prompt.</span>
+  <div id="app">
+    <header>
+      <h1>📝 Memo</h1>
+      <p>Your personal notes & tasks</p>
+    </header>
+
+    <!-- Install Banner -->
+    <div id="installBanner" class="install-banner hidden">
+      <div class="banner-content">
+        <span class="banner-icon">📱</span>
+        <div class="banner-text">
+          <strong>Install Memo</strong>
+          <span>Get app-like experience with offline support</span>
+        </div>
+      </div>
+      <button id="installBtn" class="btn-primary">Install App</button>
+    </div>
+
+    <!-- Floating Install Button (Fallback) -->
+    <div id="installFloat" class="install-float hidden">
+      <button id="installFloatBtn" class="btn-float">
+        <span>📲</span> Install
+      </button>
+    </div>
+
+    <main>
+      <div class="card-grid">
+        <a href="notes.html" class="card">
+          <div class="card-icon">📋</div>
+          <h3>Notes</h3>
+          <p>Create and manage your notes</p>
+        </a>
+        <a href="tasks.html" class="card">
+          <div class="card-icon">✅</div>
+          <h3>Tasks</h3>
+          <p>Track your daily tasks</p>
+        </a>
+        <a href="about.html" class="card">
+          <div class="card-icon">ℹ️</div>
+          <h3>About</h3>
+          <p>Learn more about Memo</p>
+        </a>
+      </div>
+
+      <div id="statusMessage" class="status-message">
+        <span id="statusText">Loading...</span>
+      </div>
+    </main>
   </div>
 
-  <section>
-    <p style="margin-top:0; color:#555; font-size:14px;">If the prompt does not appear, use Chrome mobile menu → Add to Home screen.</p>
-  </section>
-
-  <ul>
-    <li><a href="./notes.html">Notes</a></li>
-    <li><a href="./tasks.html">Tasks</a></li>
-    <li><a href="./about.html">About</a></li>
-  </ul>
-
   <script>
-    let deferredInstallPrompt = null;
-    const installBtn = document.getElementById("install-btn");
-    const installText = document.getElementById("install-text");
+    // ============================================
+    // COMPLETE PWA INSTALL HANDLER
+    // ============================================
+    
+    (function() {
+      'use strict';
 
-    installBtn.disabled = true;
-    installBtn.classList.add("disabled");
+      let deferredPrompt = null;
+      let isAppInstalled = false;
+      
+      const installBanner = document.getElementById('installBanner');
+      const installFloat = document.getElementById('installFloat');
+      const installBtn = document.getElementById('installBtn');
+      const installFloatBtn = document.getElementById('installFloatBtn');
+      const statusText = document.getElementById('statusText');
 
-    const isAndroidChrome = () => {
-      const ua = navigator.userAgent.toLowerCase();
-      return ua.includes("android") && ua.includes("chrome") && !ua.includes("edg") && !ua.includes("opr") && !ua.includes("crios");
-    };
-
-    const updateInstallUI = () => {
-      if (!isAndroidChrome()) {
-        installText.textContent = "Install works only on Android Chrome. Use Chrome mobile menu → Add to Home screen.";
-        installBtn.disabled = true;
-        installBtn.classList.add("disabled");
-      } else {
-        installText.textContent = "Tap Add to Home screen when the browser prompt is available.";
-        installBtn.disabled = false;
-        installBtn.classList.remove("disabled");
-      }
-    };
-
-    const showMenuFallback = () => {
-      installText.textContent = "Install prompt not available. Use Chrome mobile menu → Add to Home screen.";
-    };
-
-    const promptInstall = async () => {
-      if (!deferredInstallPrompt) {
-        showMenuFallback();
-        return;
+      // ============================================
+      // UTILITY FUNCTIONS
+      // ============================================
+      
+      function isStandalone() {
+        return window.matchMedia('(display-mode: standalone)').matches || 
+               window.navigator.standalone === true;
       }
 
-      deferredInstallPrompt.prompt();
-      const choiceResult = await deferredInstallPrompt.userChoice;
-      console.log("Install prompt result:", choiceResult.outcome);
-
-      if (choiceResult.outcome === "accepted") {
-        installText.textContent = "Installed. Open it from your home screen.";
-      } else {
-        installText.textContent = "Install canceled. You can try again from the button.";
+      function isAndroidChrome() {
+        const ua = navigator.userAgent.toLowerCase();
+        return /android/.test(ua) && /chrome/.test(ua) && !/edg/.test(ua) && !/opr/.test(ua);
       }
 
-      deferredInstallPrompt = null;
-    };
+      function isIOS() {
+        return /iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase());
+      }
 
-    window.addEventListener("beforeinstallprompt", (event) => {
-      event.preventDefault();
-      deferredInstallPrompt = event;
-      installText.textContent = "Install ready! Tap Add to Home screen.";
-      installBtn.disabled = false;
-      installBtn.classList.remove("disabled");
-    });
+      function isMobile() {
+        return /android|iphone|ipad|ipod|blackberry|windows phone/.test(navigator.userAgent.toLowerCase());
+      }
 
-    installBtn.addEventListener("click", promptInstall);
+      function showStatus(message, isError = false) {
+        statusText.textContent = message;
+        statusText.style.color = isError ? '#dc2626' : '#16a34a';
+        document.getElementById('statusMessage').style.display = 'block';
+        console.log('[PWA]', message);
+      }
 
-    window.addEventListener("appinstalled", () => {
-      console.log("PWA installed");
-      installText.textContent = "App installed. Open it from your home screen.";
-    });
+      // ============================================
+      // SHOW/HIDE INSTALL UI
+      // ============================================
+      
+      function showInstallUI() {
+        if (isAppInstalled || isStandalone()) {
+          installBanner.classList.add('hidden');
+          installFloat.classList.add('hidden');
+          showStatus('✅ App is installed and running');
+          return;
+        }
 
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", async () => {
-        updateInstallUI();
+        if (isMobile() && isAndroidChrome()) {
+          // Show install options for Android Chrome
+          installBanner.classList.remove('hidden');
+          installFloat.classList.remove('hidden');
+          showStatus('📱 Tap "Install App" to add to home screen');
+        } else if (isIOS()) {
+          // iOS specific instructions
+          installBanner.classList.remove('hidden');
+          installFloat.classList.add('hidden');
+          document.querySelector('.banner-text span').textContent = 
+            'Tap Share button then "Add to Home Screen"';
+          showStatus('📱 Use Safari share menu to install');
+        } else if (!isMobile()) {
+          // Desktop
+          installBanner.classList.add('hidden');
+          installFloat.classList.add('hidden');
+          showStatus('💻 Desktop version - use Chrome menu to install');
+        } else {
+          // Other mobile browsers
+          installBanner.classList.remove('hidden');
+          installFloat.classList.add('hidden');
+          document.querySelector('.banner-text span').textContent = 
+            'Use your browser\'s menu to add to home screen';
+          showStatus('📱 Use browser menu to install');
+        }
+      }
+
+      // ============================================
+      // INSTALL HANDLERS
+      // ============================================
+      
+      async function handleInstall() {
+        if (!deferredPrompt) {
+          // Fallback: Show manual instructions
+          showManualInstallInstructions();
+          return;
+        }
+
         try {
-          const registration = await navigator.serviceWorker.register("/service-worker.js");
-          console.log("Service worker registered", registration.scope);
-
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: "SKIP_WAITING" });
+          // Show the install prompt
+          deferredPrompt.prompt();
+          
+          // Wait for user choice
+          const result = await deferredPrompt.userChoice;
+          
+          if (result.outcome === 'accepted') {
+            isAppInstalled = true;
+            showStatus('✅ App installed successfully!');
+            installBanner.classList.add('hidden');
+            installFloat.classList.add('hidden');
+          } else {
+            showStatus('❌ Installation cancelled', true);
+            // Show fallback instructions
+            setTimeout(showManualInstallInstructions, 1000);
           }
+          
+          deferredPrompt = null;
+        } catch (error) {
+          console.error('Install error:', error);
+          showManualInstallInstructions();
+        }
+      }
 
-          registration.addEventListener("updatefound", () => {
+      function showManualInstallInstructions() {
+        let message = '';
+        if (isAndroidChrome()) {
+          message = '📱 Tap ⋮ menu → "Add to Home screen" → "Add"';
+        } else if (isIOS()) {
+          message = '📱 Tap Share button → "Add to Home Screen"';
+        } else {
+          message = '📱 Use browser menu to add to home screen';
+        }
+        
+        showStatus(message);
+        alert(
+          'To install Memo:\n\n' +
+          (isAndroidChrome() ? '1. Tap the ⋮ menu in Chrome\n2. Select "Add to Home screen"\n3. Tap "Add"\n' :
+           isIOS() ? '1. Tap the Share button (⬆️)\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add"\n' :
+           '1. Open Chrome menu\n2. Select "Install App" or "Add to Home screen"\n') +
+          '\nThe app will appear on your home screen! 🎉'
+        );
+      }
+
+      // ============================================
+      // SERVICE WORKER REGISTRATION
+      // ============================================
+      
+      async function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) {
+          showStatus('ℹ️ Service Worker not supported in this browser');
+          return;
+        }
+
+        try {
+          const registration = await navigator.serviceWorker.register('service-worker.js', {
+            scope: '/'
+          });
+          
+          console.log('Service Worker registered:', registration);
+          
+          // Check for updates
+          registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
-            newWorker.addEventListener("statechange", () => {
-              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                window.location.reload();
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New version available
+                if (confirm('New version available! Update now?')) {
+                  newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  window.location.reload();
+                }
               }
             });
           });
+
+          // Handle waiting service worker
+          if (registration.waiting) {
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+
+          // Check if already installed
+          if (isStandalone()) {
+            isAppInstalled = true;
+            showStatus('✅ App is running in standalone mode');
+          }
+
+          showStatus('✅ Service Worker ready');
+
         } catch (error) {
-          console.error("Service worker registration failed", error);
+          console.error('Service Worker registration failed:', error);
+          showStatus('❌ Service Worker registration failed', true);
         }
+      }
+
+      // ============================================
+      // EVENT LISTENERS
+      // ============================================
+      
+      // Before install prompt
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        
+        // Show install UI
+        installBanner.classList.remove('hidden');
+        if (isMobile()) {
+          installFloat.classList.remove('hidden');
+        }
+        showStatus('📱 Tap "Install App" to install');
+        console.log('[PWA] Install prompt available');
       });
-    } else {
-      updateInstallUI();
-    }
+
+      // App installed
+      window.addEventListener('appinstalled', () => {
+        isAppInstalled = true;
+        installBanner.classList.add('hidden');
+        installFloat.classList.add('hidden');
+        showStatus('✅ App installed successfully! 🎉');
+        console.log('[PWA] App installed');
+      });
+
+      // Install button click
+      installBtn.addEventListener('click', handleInstall);
+      installFloatBtn.addEventListener('click', handleInstall);
+
+      // ============================================
+      // INITIALIZATION
+      // ============================================
+      
+      async function init() {
+        // Check if already installed
+        if (isStandalone()) {
+          isAppInstalled = true;
+          showStatus('✅ App is running as standalone');
+          installBanner.classList.add('hidden');
+          installFloat.classList.add('hidden');
+        }
+
+        // Register service worker
+        await registerServiceWorker();
+
+        // Show appropriate install UI
+        setTimeout(() => {
+          if (!isAppInstalled && !isStandalone()) {
+            showInstallUI();
+          }
+        }, 1000);
+
+        // Handle visibility change (for iOS)
+        document.addEventListener('visibilitychange', () => {
+          if (!document.hidden && isStandalone()) {
+            isAppInstalled = true;
+            installBanner.classList.add('hidden');
+            installFloat.classList.add('hidden');
+          }
+        });
+
+        console.log('[PWA] Initialized');
+      }
+      // Start the app
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
   </script>
 </body>
 </html>
