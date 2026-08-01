@@ -1,14 +1,35 @@
 body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
 
-.install-prompt{
-  position:fixed;
-  right:16px;
-  bottom:16px;
-  max-width:320px;
+.install-banner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:10px;
   background:#ffffff;
   border:1px solid rgba(0,0,0,0.12);
   border-radius:16px;
-  box-shadow:0 16px 48px rgba(0,0,0,0.12);
+  padding:14px 16px;
+  margin-bottom:18px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.08);
+}
+
+.install-banner-text{
+  flex:1;
+  color:#111;
+  font-size:15px;
+  margin:0;
+}
+
+.install-container{
+  position:fixed;
+  right:16px;
+  bottom:16px;
+  max-width:340px;
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,0.14);
+  border-radius:16px;
+  box-shadow:0 18px 40px rgba(0,0,0,0.12);
   padding:14px 16px;
   display:flex;
   align-items:center;
@@ -16,11 +37,11 @@ body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
   z-index:1000;
 }
 
-.install-prompt.hidden{
+.install-container.hidden{
   display:none;
 }
 
-.install-prompt span{
+.install-text{
   flex:1;
   font-size:14px;
   color:#111;
@@ -40,18 +61,8 @@ body{font-family:Arial,sans-serif;padding:20px;background:#f5f5f5}
   background:#1949b4;
 }
 
-.install-close{
-  background:transparent;
-  border:none;
-  color:#555;
-  font-size:18px;
-  line-height:1;
-  padding:0 6px;
-  cursor:pointer;
-}
-
 @media(max-width:480px){
-  .install-prompt{
+  .install-container{
     right:10px;
     bottom:10px;
     left:10px;

@@ -14,6 +14,12 @@
 <body>
   <h2>Home</h2>
   <p>All assets use relative paths for reliable deployment.</p>
+  <div class="install-banner" role="region" aria-label="PWA install">
+    <p class="install-banner-text">Install Memo to your home screen for app-like access.</p>
+    <button id="install-btn" class="install-action">Add to Home screen</button>
+    <span id="install-text">Open this menu to install if the browser prompt does not appear.</span>
+  </div>
+
   <ul>
     <li><a href="./notes.html">Notes</a></li>
     <li><a href="./tasks.html">Tasks</a></li>
@@ -21,8 +27,8 @@
   </ul>
 
   <div id="install-container" class="install-container hidden" role="dialog" aria-live="polite">
-    <button id="install-btn" class="install-action">Add to Home screen</button>
-    <span id="install-text">Install Memo to your home screen</span>
+    <button id="install-btn-auto" class="install-action">Add to Home screen</button>
+    <span id="install-text-auto">Add Memo to your home screen</span>
   </div>
 
   <script>
@@ -30,6 +36,8 @@
     const installContainer = document.getElementById("install-container");
     const installBtn = document.getElementById("install-btn");
     const installText = document.getElementById("install-text");
+    const installBtnAuto = document.getElementById("install-btn-auto");
+    const installTextAuto = document.getElementById("install-text-auto");
 
     window.addEventListener("beforeinstallprompt", (event) => {
       event.preventDefault();
@@ -38,9 +46,13 @@
       installContainer.classList.remove("hidden");
     });
 
-    installBtn.addEventListener("click", async () => {
+    const showMenuFallback = () => {
+      installText.textContent = "If the prompt does not appear, use your browser menu to Add to Home screen.";
+    };
+
+    const promptInstall = async (textElement, containerElement) => {
       if (!deferredInstallPrompt) {
-        installText.textContent = "Use your browser menu to Add to Home screen.";
+        showMenuFallback();
         return;
       }
 
@@ -49,14 +61,17 @@
       console.log("Install prompt result:", choiceResult.outcome);
 
       if (choiceResult.outcome === "accepted") {
-        installText.textContent = "Installed. Open it from your home screen.";
+        textElement.textContent = "Installed. Open it from your home screen.";
       } else {
-        installText.textContent = "Install canceled. You can try again from the button.";
+        textElement.textContent = "Install canceled. You can try again from the button.";
       }
 
       deferredInstallPrompt = null;
-      installContainer.classList.add("hidden");
-    });
+      if (containerElement) containerElement.classList.add("hidden");
+    };
+
+    installBtn.addEventListener("click", () => promptInstall(installText, installContainer));
+    installBtnAuto.addEventListener("click", () => promptInstall(installTextAuto, installContainer));
 
     window.addEventListener("appinstalled", () => {
       console.log("PWA installed");
