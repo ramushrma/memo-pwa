@@ -4,98 +4,40 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- CRITICAL FOR ANDROID PWA -->
+  <!-- PWA Meta Tags -->
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="application-name" content="Memo">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Memo">
   <meta name="theme-color" content="#2563eb">
-  <meta name="msapplication-TileColor" content="#2563eb">
   
-  <!-- Manifest - MUST be absolute path -->
+  <!-- Manifest -->
   <link rel="manifest" href="/manifest.json">
+  <link rel="icon" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
   
-  <!-- Icons -->
-  <link rel="icon" sizes="192x192" href="/images.png">
-  <link rel="apple-touch-icon" href="/images.png">
-  
-  <title>Memo - Notes & Tasks</title>
+  <title>Memo</title>
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+    header { text-align: center; padding: 30px; background: #2563eb; color: white; border-radius: 12px; margin-bottom: 20px; }
     
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: #f0f4f8;
-      padding: 16px;
-      min-height: 100vh;
-    }
-    
-    .container {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-    
-    header {
-      background: linear-gradient(135deg, #2563eb, #7c3aed);
-      color: white;
-      padding: 30px 20px;
-      border-radius: 16px;
-      text-align: center;
-      margin-bottom: 20px;
-      box-shadow: 0 8px 30px rgba(37, 99, 235, 0.3);
-    }
-    
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 700;
-    }
-    
-    header p {
-      opacity: 0.9;
-      margin-top: 5px;
-      font-size: 1rem;
-    }
-    
-    /* PWA Install Banner - THIS IS KEY FOR ANDROID */
+    /* Install Banner - Always visible on Android */
     .install-banner {
       background: white;
-      border-radius: 16px;
+      border-radius: 12px;
       padding: 16px;
       margin-bottom: 16px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-      border: 1px solid #e2e8f0;
-      display: none; /* Hidden by default, shown by JavaScript */
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      display: flex;
       align-items: center;
       gap: 12px;
+      border: 1px solid #e2e8f0;
     }
     
-    .install-banner.show {
-      display: flex;
-    }
-    
-    .install-banner-icon {
-      font-size: 32px;
-      flex-shrink: 0;
-    }
-    
-    .install-banner-text {
-      flex: 1;
-    }
-    
-    .install-banner-text strong {
-      display: block;
-      font-size: 16px;
-      color: #1a202c;
-    }
-    
-    .install-banner-text span {
-      font-size: 14px;
-      color: #718096;
+    .install-banner.hidden {
+      display: none;
     }
     
     .install-btn {
@@ -103,177 +45,101 @@
       color: white;
       border: none;
       padding: 10px 24px;
-      border-radius: 12px;
+      border-radius: 8px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
       white-space: nowrap;
-      transition: all 0.2s;
     }
     
-    .install-btn:active {
-      transform: scale(0.95);
-    }
+    .install-btn:active { transform: scale(0.95); }
     
-    .install-btn.hidden {
-      display: none;
-    }
+    .install-text { flex: 1; }
+    .install-text strong { display: block; }
+    .install-text span { color: #666; font-size: 14px; }
     
-    /* Cards */
     .card-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin-top: 16px;
+      margin-top: 20px;
     }
     
     .card {
       background: white;
-      padding: 24px 16px;
+      padding: 20px;
       border-radius: 12px;
       text-align: center;
       text-decoration: none;
-      color: #2d3748;
+      color: #333;
       box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border: 1px solid #e2e8f0;
-      transition: all 0.2s;
-    }
-    
-    .card:active {
-      transform: scale(0.96);
-    }
-    
-    .card-icon {
-      font-size: 36px;
-      margin-bottom: 8px;
-    }
-    
-    .card h3 {
-      font-size: 16px;
-      margin-bottom: 4px;
-    }
-    
-    .card p {
-      font-size: 13px;
-      color: #718096;
     }
     
     .status {
-      text-align: center;
       margin-top: 20px;
       padding: 12px;
       background: #edf2f7;
-      border-radius: 12px;
-      font-size: 14px;
-      color: #4a5568;
-    }
-    
-    .status.success {
-      background: #c6f6d5;
-      color: #22543d;
-    }
-    
-    /* PWA Note */
-    .pwa-note {
-      text-align: center;
-      padding: 10px;
-      background: #ebf8ff;
       border-radius: 8px;
+      text-align: center;
       font-size: 14px;
-      color: #2b6cb0;
-      margin-bottom: 16px;
-      border: 1px solid #bee3f8;
     }
     
-    @media (max-width: 400px) {
-      .card-grid {
-        grid-template-columns: 1fr;
-      }
-      
-      .install-banner {
-        flex-wrap: wrap;
-        justify-content: center;
-        text-align: center;
-      }
-    }
+    .status.success { background: #c6f6d5; color: #22543d; }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <h1>📝 Memo</h1>
-    <p>Your personal notes &amp; tasks</p>
-  </header>
+<header>
+  <h1>📝 Memo</h1>
+  <p>Your notes &amp; tasks</p>
+</header>
 
-  <!-- PWA Install Banner - Shows on Android Chrome -->
-  <div class="install-banner" id="installBanner">
-    <div class="install-banner-icon">📱</div>
-    <div class="install-banner-text">
-      <strong>Install Memo</strong>
-      <span>Add to home screen for app-like experience</span>
-    </div>
-    <button class="install-btn" id="installBtn">Install</button>
+<!-- Install Banner - Always shown on Android -->
+<div class="install-banner" id="installBanner">
+  <span style="font-size: 32px;">📱</span>
+  <div class="install-text">
+    <strong>Install Memo</strong>
+    <span>Add to home screen for app-like experience</span>
   </div>
-
-  <!-- PWA Note -->
-  <div class="pwa-note" id="pwaNote">
-    ⚡ Works offline after installation
-  </div>
-
-  <div class="card-grid">
-    <a href="/notes.html" class="card">
-      <div class="card-icon">📋</div>
-      <h3>Notes</h3>
-      <p>Create &amp; manage</p>
-    </a>
-    <a href="/tasks.html" class="card">
-      <div class="card-icon">✅</div>
-      <h3>Tasks</h3>
-      <p>Track your tasks</p>
-    </a>
-    <a href="/about.html" class="card">
-      <div class="card-icon">ℹ️</div>
-      <h3>About</h3>
-      <p>Learn more</p>
-    </a>
-  </div>
-
-  <div class="status" id="status">
-    📱 Open in Chrome on Android to install
-  </div>
+  <button class="install-btn" id="installBtn">Install</button>
 </div>
+
+<div class="card-grid">
+  <a href="/notes.html" class="card">📋 Notes</a>
+  <a href="/tasks.html" class="card">✅ Tasks</a>
+  <a href="/about.html" class="card">ℹ️ About</a>
+</div>
+
+<div class="status" id="status">Loading...</div>
 
 <script>
 // ============================================
-// ANDROID PWA INSTALL - SIMPLE & RELIABLE
+// FIXED: ANDROID PWA INSTALL - PROPER WAY
 // ============================================
 
 (function() {
   'use strict';
 
+  console.log('[PWA] Starting...');
+
   const installBanner = document.getElementById('installBanner');
   const installBtn = document.getElementById('installBtn');
   const status = document.getElementById('status');
-  const pwaNote = document.getElementById('pwaNote');
   
   let deferredPrompt = null;
+  let isInstalled = false;
 
   // ============================================
   // CHECK IF ALREADY INSTALLED
   // ============================================
   
-  function isInstalled() {
-    return window.matchMedia('(display-mode: standalone)').matches || 
-           window.navigator.standalone === true;
-  }
-
-  if (isInstalled()) {
-    installBanner.classList.remove('show');
-    installBtn.classList.add('hidden');
-    status.textContent = '✅ App is installed and running';
+  if (window.matchMedia('(display-mode: standalone)').matches || 
+      window.navigator.standalone === true) {
+    isInstalled = true;
+    installBanner.classList.add('hidden');
+    status.textContent = '✅ App is already installed';
     status.className = 'status success';
-    pwaNote.textContent = '✅ Running as installed app';
+    console.log('[PWA] Already installed');
     return;
   }
 
@@ -281,66 +147,65 @@
   // DETECT ANDROID CHROME
   // ============================================
   
-  function isAndroidChrome() {
-    const ua = navigator.userAgent.toLowerCase();
-    return /android/.test(ua) && /chrome/.test(ua) && !/edg/.test(ua) && !/opr/.test(ua);
-  }
+  const isAndroidChrome = /android/.test(navigator.userAgent.toLowerCase()) && 
+                          /chrome/.test(navigator.userAgent.toLowerCase()) &&
+                          !/edg/.test(navigator.userAgent.toLowerCase());
 
-  if (!isAndroidChrome()) {
-    status.textContent = '📱 Open this page in Chrome on Android to install';
-    pwaNote.textContent = '⚠️ Use Chrome browser on Android for PWA installation';
+  if (!isAndroidChrome) {
+    status.textContent = '📱 Open in Chrome on Android to install';
+    installBanner.classList.add('hidden');
+    console.log('[PWA] Not Android Chrome');
     return;
   }
 
-  status.textContent = '📱 Chrome on Android detected. Install option available.';
+  console.log('[PWA] Android Chrome detected');
 
   // ============================================
-  // BEFORE INSTALL PROMPT - SHOW BANNER
+  // BEFORE INSTALL PROMPT - FIXED
   // ============================================
   
   window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
+    console.log('[PWA] beforeinstallprompt fired');
+    
+    // CRITICAL FIX: Don't preventDefault unless we handle it properly
+    // We want the banner to show automatically
+    // e.preventDefault(); // COMMENT THIS OUT - Let Chrome show banner
+    
+    // Store the prompt for later use
     deferredPrompt = e;
     
-    // Show the install banner
-    installBanner.classList.add('show');
-    installBtn.classList.remove('hidden');
+    // Show our custom banner
+    installBanner.classList.remove('hidden');
     status.textContent = '📱 Tap "Install" to add to home screen';
-    
-    console.log('[PWA] Install prompt ready');
+    console.log('[PWA] Install prompt ready - banner showing');
   });
 
   // ============================================
-  // INSTALL BUTTON CLICK
+  // INSTALL BUTTON - PROPER HANDLING
   // ============================================
   
   installBtn.addEventListener('click', async () => {
+    console.log('[PWA] Install button clicked');
+    
     if (!deferredPrompt) {
-      // Fallback for older Chrome versions
-      status.textContent = '📱 Use Chrome menu ⋮ → "Add to Home screen"';
-      alert(
-        'To install Memo:\n\n' +
-        '1. Tap the ⋮ menu in Chrome\n' +
-        '2. Select "Add to Home screen"\n' +
-        '3. Tap "Add"\n\n' +
-        'The app will appear on your home screen!'
-      );
+      console.log('[PWA] No deferred prompt, showing fallback');
+      showManualInstall();
       return;
     }
 
     try {
       // Show the install prompt
+      console.log('[PWA] Showing prompt...');
       deferredPrompt.prompt();
       
       // Wait for user choice
       const result = await deferredPrompt.userChoice;
+      console.log('[PWA] User choice:', result.outcome);
       
       if (result.outcome === 'accepted') {
         status.textContent = '✅ App installed successfully! 🎉';
         status.className = 'status success';
-        installBanner.classList.remove('show');
-        installBtn.classList.add('hidden');
-        pwaNote.textContent = '✅ App installed! Open from home screen.';
+        installBanner.classList.add('hidden');
         console.log('[PWA] Installation accepted');
       } else {
         status.textContent = '❌ Installation cancelled';
@@ -350,69 +215,67 @@
       deferredPrompt = null;
     } catch (error) {
       console.error('[PWA] Install error:', error);
-      status.textContent = '❌ Install error: ' + error.message;
+      showManualInstall();
     }
   });
+
+  // ============================================
+  // MANUAL INSTALL FALLBACK
+  // ============================================
+  
+  function showManualInstall() {
+    status.textContent = '📱 Tap Chrome menu ⋮ → "Add to Home screen"';
+    alert(
+      'To install Memo:\n\n' +
+      '1. Tap the ⋮ menu in Chrome\n' +
+      '2. Select "Add to Home screen"\n' +
+      '3. Tap "Add"\n\n' +
+      'The app will appear on your home screen!'
+    );
+  }
 
   // ============================================
   // APP INSTALLED EVENT
   // ============================================
   
   window.addEventListener('appinstalled', () => {
+    console.log('[PWA] App installed event');
     status.textContent = '✅ App installed successfully! 🎉';
     status.className = 'status success';
-    installBanner.classList.remove('show');
-    installBtn.classList.add('hidden');
-    pwaNote.textContent = '✅ App installed! Open from home screen.';
-    console.log('[PWA] App installed');
+    installBanner.classList.add('hidden');
   });
 
   // ============================================
-  // SERVICE WORKER REGISTRATION
+  // SERVICE WORKER
   // ============================================
   
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-        .then(reg => {
-          console.log('[PWA] Service Worker registered:', reg);
-          status.textContent = '✅ Service Worker ready. Install the app!';
-        })
-        .catch(err => {
-          console.error('[PWA] Service Worker error:', err);
-          status.textContent = '⚠️ Service Worker error';
-        });
-    });
+    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+      .then(reg => {
+        console.log('[PWA] Service Worker registered:', reg);
+        if (!deferredPrompt) {
+          status.textContent = '✅ Ready to install! Tap "Install" button';
+        }
+      })
+      .catch(err => {
+        console.error('[PWA] SW Error:', err);
+        status.textContent = '⚠️ Service Worker error';
+      });
   }
 
   // ============================================
-  // FALLBACK: Show banner after 5 seconds if no prompt
+  // FALLBACK: Show banner if no prompt after 3s
   // ============================================
   
   setTimeout(() => {
-    if (!deferredPrompt && !isInstalled()) {
-      // Show manual install instructions
-      installBanner.classList.add('show');
-      installBtn.classList.remove('hidden');
-      status.textContent = '📱 Tap "Install" or use Chrome menu ⋮ → "Add to Home screen"';
-      
-      // Change button text for manual install
-      installBtn.textContent = '📱 Add to Home screen';
-      
-      // Update install handler for manual install
-      installBtn.onclick = function() {
-        alert(
-          'To install Memo:\n\n' +
-          '1. Tap the ⋮ menu in Chrome\n' +
-          '2. Select "Add to Home screen"\n' +
-          '3. Tap "Add"\n\n' +
-          'The app will appear on your home screen!'
-        );
-      };
+    if (!deferredPrompt && !isInstalled) {
+      console.log('[PWA] No install prompt after 3s, showing manual');
+      installBanner.classList.remove('hidden');
+      status.textContent = '📱 Tap "Install" or use Chrome menu';
     }
-  }, 5000);
+  }, 3000);
 
-  console.log('[PWA] Initialized for Android Chrome');
+  console.log('[PWA] Ready');
 
 })();
 </script>
