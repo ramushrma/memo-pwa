@@ -1,24 +1,32 @@
 <!doctype html>
-<html><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<base href="/">
-<link rel="manifest" href="/manifest.json">
-<link rel="stylesheet" href="/style.css">
-<title>Memo PWA</title>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Memo">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon-192.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <title>Memo PWA</title>
 </head>
 <body>
-<h2>Home</h2>
-<p>All assets use root-relative routing.</p>
-<ul>
-<li><a href="/notes.html">Notes</a></li>
-<li><a href="/tasks.html">Tasks</a></li>
-<li><a href="/about.html">About</a></li>
-</ul>
-<script>
-const BASE_URL = window.location.origin;
-console.log("BASE_URL:", BASE_URL);
-if("serviceWorker" in navigator){
-  navigator.serviceWorker.register("/service-worker.js");
-}
-</script>
-</body></html>
+  <h2>Home</h2>
+  <p>All assets use relative paths for reliable deployment.</p>
+  <ul>
+    <li><a href="./notes.html">Notes</a></li>
+    <li><a href="./tasks.html">Tasks</a></li>
+    <li><a href="./about.html">About</a></li>
+  </ul>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register(new URL("./service-worker.js", window.location.href), { scope: "./" })
+          .then((registration) => console.log("Service worker registered", registration.scope))
+          .catch((error) => console.error("Service worker registration failed", error));
+      });
+    }
+  </script>
+</body>
+</html>
