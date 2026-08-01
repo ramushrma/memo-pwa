@@ -30,18 +30,10 @@
     <li><a href="./about.html">About</a></li>
   </ul>
 
-  <div id="install-container" class="install-container hidden" role="dialog" aria-live="polite">
-    <button id="install-btn-auto" class="install-action">Add to Home screen</button>
-    <span id="install-text-auto">Add Memo to your home screen</span>
-  </div>
-
   <script>
     let deferredInstallPrompt = null;
-    const installContainer = document.getElementById("install-container");
     const installBtn = document.getElementById("install-btn");
     const installText = document.getElementById("install-text");
-    const installBtnAuto = document.getElementById("install-btn-auto");
-    const installTextAuto = document.getElementById("install-text-auto");
 
     installBtn.disabled = true;
     installBtn.classList.add("disabled");
@@ -67,7 +59,7 @@
       installText.textContent = "Install prompt not available. Use Chrome mobile menu → Add to Home screen.";
     };
 
-    const promptInstall = async (textElement, containerElement) => {
+    const promptInstall = async () => {
       if (!deferredInstallPrompt) {
         showMenuFallback();
         return;
@@ -78,13 +70,12 @@
       console.log("Install prompt result:", choiceResult.outcome);
 
       if (choiceResult.outcome === "accepted") {
-        textElement.textContent = "Installed. Open it from your home screen.";
+        installText.textContent = "Installed. Open it from your home screen.";
       } else {
-        textElement.textContent = "Install canceled. You can try again from the button.";
+        installText.textContent = "Install canceled. You can try again from the button.";
       }
 
       deferredInstallPrompt = null;
-      if (containerElement) containerElement.classList.add("hidden");
     };
 
     window.addEventListener("beforeinstallprompt", (event) => {
@@ -93,15 +84,12 @@
       installText.textContent = "Install ready! Tap Add to Home screen.";
       installBtn.disabled = false;
       installBtn.classList.remove("disabled");
-      installContainer.classList.remove("hidden");
     });
 
-    installBtn.addEventListener("click", () => promptInstall(installText, installContainer));
-    installBtnAuto.addEventListener("click", () => promptInstall(installTextAuto, installContainer));
+    installBtn.addEventListener("click", promptInstall);
 
     window.addEventListener("appinstalled", () => {
       console.log("PWA installed");
-      installContainer.classList.add("hidden");
       installText.textContent = "App installed. Open it from your home screen.";
     });
 
