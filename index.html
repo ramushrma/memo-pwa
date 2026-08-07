@@ -1,274 +1,249 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
-  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="transparent">
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="application-name" content="Memo">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="Memo">
-  <meta name="theme-color" content="#2563eb">
-  
-  <!-- Manifest -->
   <link rel="manifest" href="/manifest.json">
   <link rel="icon" sizes="192x192" href="/icon-192.png">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  
-  <title>Memo</title>
-  
+  <title>Memo Login</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
-    header { text-align: center; padding: 30px; background: #2563eb; color: white; border-radius: 12px; margin-bottom: 20px; }
-    
-    /* Install Banner - Always visible on Android */
-    .install-banner {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border: 1px solid #e2e8f0;
+    html, body { min-height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif; background: radial-gradient(circle at top, #eef2ff 0%, #f8fafc 40%, #e2e8f0 100%); color: #0f172a; }
+    .page-wrap { max-width: 540px; margin: 0 auto; padding: 24px 18px 36px; }
+    .brand { text-align: center; margin-bottom: 24px; }
+    .brand h1 { font-size: 2.8rem; color: #1d4ed8; letter-spacing: -0.04em; }
+    .brand p { margin-top: 10px; color: #475569; line-height: 1.65; }
+    .card { background: white; border-radius: 34px; border: 1px solid rgba(148,163,184,0.18); box-shadow: 0 30px 70px rgba(15,23,42,0.08); overflow: hidden; }
+    .panel-head { padding: 28px 24px; background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; }
+    .panel-head h2 { font-size: 2rem; margin-bottom: 10px; }
+    .panel-head p { opacity: 0.92; line-height: 1.6; }
+    .panel-body { padding: 24px; }
+    .field { margin-top: 18px; }
+    .field label { display: block; margin-bottom: 10px; font-size: 0.95rem; color: #334155; }
+    .field input { width: 100%; border: 1px solid #cbd5e1; border-radius: 16px; padding: 14px 16px; font-size: 1rem; background: #f8fafc; color: #0f172a; outline: none; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+    .field input:focus { border-color: #2563eb; box-shadow: 0 0 0 4px rgba(37,99,235,0.12); }
+    .field-hint { display: none; margin-top: 8px; color: #ef4444; font-size: 0.92rem; }
+    .field-hint.active { display: block; }
+    .primary-btn { width: 100%; margin-top: 24px; padding: 16px; border: none; border-radius: 18px; font-size: 1rem; font-weight: 700; color: white; background: #2563eb; cursor: pointer; box-shadow: 0 16px 32px rgba(37,99,235,0.24); transition: transform 0.2s ease, background 0.2s ease; }
+    .primary-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
+    .note { margin-top: 16px; color: #475569; font-size: 0.95rem; text-align: center; line-height: 1.6; }
+    .status-line { margin-top: 18px; padding: 14px 16px; border-radius: 16px; border: 1px solid transparent; display: none; font-size: 0.95rem; }
+    .status-line.show { display: block; }
+    .status-line.error { background: #fee2e2; border-color: #fecaca; color: #991b1b; }
+    .status-line.success { background: #dcfce7; border-color: #86efac; color: #166534; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+    .top-panel { background: linear-gradient(135deg, #2563eb, #7c3aed); border-radius: 28px; padding: 24px; color: white; box-shadow: 0 28px 60px rgba(37,99,235,0.18); margin-bottom: 22px; }
+    .top-panel .badge { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: rgba(255,255,255,0.18); font-size: 0.92rem; margin-bottom: 14px; }
+    .top-panel h3 { font-size: 1.95rem; margin-bottom: 10px; }
+    .top-panel p { opacity: 0.92; line-height: 1.6; }
+    .stats-grid { display: grid; gap: 16px; margin-bottom: 20px; }
+    .stat-card { background: white; border-radius: 24px; padding: 20px; border: 1px solid #e2e8f0; box-shadow: 0 18px 35px rgba(15,23,42,0.06); }
+    .stat-card span { display: block; margin-bottom: 10px; color: #64748b; font-size: 0.9rem; }
+    .stat-card h4 { font-size: 1.75rem; color: #0f172a; }
+    .menu-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .menu-card { display: flex; align-items: center; gap: 14px; padding: 18px; background: white; border-radius: 24px; text-decoration: none; color: #0f172a; border: 1px solid #e2e8f0; box-shadow: 0 18px 36px rgba(15,23,42,0.06); transition: transform 0.2s ease, border-color 0.2s ease; }
+    .menu-card:hover { transform: translateY(-2px); border-color: #2563eb; }
+    .menu-icon { width: 52px; height: 52px; border-radius: 18px; display: grid; place-items: center; background: rgba(37,99,235,0.12); font-size: 1.5rem; }
+    .menu-text h4 { font-size: 1rem; margin-bottom: 6px; }
+    .menu-text p { font-size: 0.92rem; color: #64748b; line-height: 1.45; }
+    .logout-btn { width: 100%; margin-top: 16px; border: 1px solid rgba(15,23,42,0.14); background: white; color: #0f172a; border-radius: 18px; padding: 15px 0; font-weight: 700; cursor: pointer; }
+    .logout-btn:hover { background: #f8fafc; }
+    .bottom-nav { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; padding: 14px; background: rgba(255,255,255,0.94); border-radius: 24px; box-shadow: 0 24px 50px rgba(15,23,42,0.08); position: sticky; bottom: 16px; margin-top: 22px; }
+    .nav-link { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; text-decoration: none; color: #0f172a; font-size: 0.83rem; padding: 10px 8px; border-radius: 18px; transition: background 0.2s ease; }
+    .nav-link:hover { background: #eff6ff; }
+    .nav-link span { font-size: 1.5rem; }
+    @media (max-width: 560px) {
+      .page-wrap { padding: 18px 14px 28px; }
+      .panel-head h2 { font-size: 1.75rem; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .bottom-nav { position: static; margin-top: 18px; }
     }
-    
-    .install-banner.hidden {
-      display: none;
-    }
-    
-    .install-btn {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 10px 24px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    
-    .install-btn:active { transform: scale(0.95); }
-    
-    .install-text { flex: 1; }
-    .install-text strong { display: block; }
-    .install-text span { color: #666; font-size: 14px; }
-    
-    .card-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
-    }
-    
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      text-align: center;
-      text-decoration: none;
-      color: #333;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    }
-    
-    .status {
-      margin-top: 20px;
-      padding: 12px;
-      background: #edf2f7;
-      border-radius: 8px;
-      text-align: center;
-      font-size: 14px;
-    }
-    
-    .status.success { background: #c6f6d5; color: #22543d; }
   </style>
 </head>
 <body>
+  <div class="page-wrap">
+    <div class="brand">
+      <h1>Memo</h1>
+      <p>Login fast. Local-only credentials. Real app look and feel.</p>
+    </div>
 
-<header>
-  <h1>📝 Memo</h1>
-  <p>Your notes &amp; tasks</p>
-</header>
+    <section id="loginSection" class="card">
+      <div class="panel-head">
+        <h2>Sign in to Memo</h2>
+        <p>Enter your mobile number and password. We store it locally for this demo.</p>
+      </div>
+      <div class="panel-body">
+        <div class="field">
+          <label for="mobileInput">Mobile number</label>
+          <input id="mobileInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Enter 10-digit number" />
+          <span id="mobileHint" class="field-hint">Mobile number must be exactly 10 digits.</span>
+        </div>
+        <div class="field">
+          <label for="passwordInput">Password</label>
+          <input id="passwordInput" type="password" placeholder="Enter password" />
+        </div>
+        <button id="loginButton" class="primary-btn">Login</button>
+        <div id="statusLine" class="status-line"></div>
+        <p class="note">If valid credentials are already saved in local storage, you'll be taken directly to the dashboard.</p>
+      </div>
+    </section>
 
-<!-- Install Banner - Shown only when prompt is available -->
-<div class="install-banner hidden" id="installBanner">
-  <span style="font-size: 32px;">📱</span>
-  <div class="install-text">
-    <strong>Install Memo</strong>
-    <span>Add to home screen for app-like experience</span>
+    <section id="dashboardSection" class="dashboard">
+      <div class="top-panel">
+        <span class="badge">Dashboard</span>
+        <h3 id="greetingText">Welcome back</h3>
+        <p>Access Home, Task, Earning, and Gallery with a polished mobile-style UI.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span>Logged in as</span>
+          <h4 id="statMobile">+91 1234567890</h4>
+        </div>
+        <div class="stat-card">
+          <span>Credentials</span>
+          <h4>Saved locally</h4>
+        </div>
+      </div>
+      <div class="menu-grid">
+        <a href="./" class="menu-card">
+          <div class="menu-icon">🏠</div>
+          <div class="menu-text"><h4>Home</h4><p>Return to the start screen.</p></div>
+        </a>
+        <a href="./tasks.html" class="menu-card">
+          <div class="menu-icon">🎯</div>
+          <div class="menu-text"><h4>Spin</h4><p>Play the instant rupee spin game.</p></div>
+        </a>
+        <a href="./earning.html" class="menu-card">
+          <div class="menu-icon">💰</div>
+          <div class="menu-text"><h4>Earning</h4><p>View your wallet history.</p></div>
+        </a>
+        <a href="./gallery.html" class="menu-card">
+          <div class="menu-icon">🖼️</div>
+          <div class="menu-text"><h4>Gallery</h4><p>Open the gallery screen.</p></div>
+        </a>
+      </div>
+      <button id="logoutButton" class="logout-btn">Logout</button>
+      <div class="bottom-nav">
+        <a href="./" class="nav-link"><span>🏠</span>Home</a>
+        <a href="./tasks.html" class="nav-link"><span>🎯</span>Spin</a>
+        <a href="./earning.html" class="nav-link"><span>💰</span>Earning</a>
+        <a href="./gallery.html" class="nav-link"><span>🖼️</span>Gallery</a>
+      </div>
+    </section>
   </div>
-  <button class="install-btn" id="installBtn">Install</button>
-</div>
 
-<div class="card-grid">
-  <a href="/notes.html" class="card">📋 Notes</a>
-  <a href="/tasks.html" class="card">✅ Tasks</a>
-  <a href="/about.html" class="card">ℹ️ About</a>
-</div>
+  <script>
+    const loginSection = document.getElementById('loginSection');
+    const dashboardSection = document.getElementById('dashboardSection');
+    const mobileInput = document.getElementById('mobileInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const loginButton = document.getElementById('loginButton');
+    const logoutButton = document.getElementById('logoutButton');
+    const mobileHint = document.getElementById('mobileHint');
+    const statusLine = document.getElementById('statusLine');
+    const greetingText = document.getElementById('greetingText');
+    const statMobile = document.getElementById('statMobile');
 
-<div class="status" id="status">Loading...</div>
-
-<script>
-// ============================================
-// FIXED: ANDROID PWA INSTALL - PROPER WAY
-// ============================================
-
-(function() {
-  'use strict';
-
-  console.log('[PWA] Starting...');
-
-  const installBanner = document.getElementById('installBanner');
-  const installBtn = document.getElementById('installBtn');
-  const status = document.getElementById('status');
-  
-  let deferredPrompt = null;
-  let isInstalled = false;
-
-  // ============================================
-  // CHECK IF ALREADY INSTALLED
-  // ============================================
-  
-  if (window.matchMedia('(display-mode: standalone)').matches || 
-      window.navigator.standalone === true) {
-    isInstalled = true;
-    installBanner.classList.add('hidden');
-    status.textContent = '✅ App is already installed';
-    status.className = 'status success';
-    console.log('[PWA] Already installed');
-    return;
-  }
-
-  // ============================================
-  // DETECT ANDROID CHROME
-  // ============================================
-  
-  const isAndroidChrome = /android/.test(navigator.userAgent.toLowerCase()) && 
-                          /chrome/.test(navigator.userAgent.toLowerCase()) &&
-                          !/edg/.test(navigator.userAgent.toLowerCase());
-
-  if (!isAndroidChrome) {
-    status.textContent = '📱 Open in Chrome on Android to install';
-    installBanner.classList.add('hidden');
-    console.log('[PWA] Not Android Chrome');
-    return;
-  }
-
-  console.log('[PWA] Android Chrome detected');
-
-  // ============================================
-  // BEFORE INSTALL PROMPT - FIXED
-  // ============================================
-  
-  window.addEventListener('beforeinstallprompt', (e) => {
-    console.log('[PWA] beforeinstallprompt fired');
-    
-    // Prevent the default prompt so we can show our custom install UI
-    e.preventDefault();
-    deferredPrompt = e;
-    
-    installBanner.classList.remove('hidden');
-    status.textContent = '📱 Tap "Install" to add to home screen';
-    console.log('[PWA] Install prompt ready - banner showing');
-  });
-
-  // ============================================
-  // INSTALL BUTTON - PROPER HANDLING
-  // ============================================
-  
-  installBtn.addEventListener('click', async () => {
-    console.log('[PWA] Install button clicked');
-    
-    if (!deferredPrompt) {
-      console.log('[PWA] No deferred prompt, showing fallback');
-      showManualInstall();
-      return;
+    function validateMobile(value) {
+      return /^[0-9]{10}$/.test(value.trim());
     }
 
-    try {
-      // Show the install prompt
-      console.log('[PWA] Showing prompt...');
-      deferredPrompt.prompt();
-      
-      // Wait for user choice
-      const result = await deferredPrompt.userChoice;
-      console.log('[PWA] User choice:', result.outcome);
-      
-      if (result.outcome === 'accepted') {
-        status.textContent = '✅ App installed successfully! 🎉';
-        status.className = 'status success';
-        installBanner.classList.add('hidden');
-        console.log('[PWA] Installation accepted');
-      } else {
-        status.textContent = '❌ Installation cancelled';
-        console.log('[PWA] Installation declined');
+    function showStatus(message, type = 'error') {
+      statusLine.textContent = message;
+      statusLine.classList.add('show');
+      statusLine.classList.toggle('success', type === 'success');
+      statusLine.classList.toggle('error', type !== 'success');
+    }
+
+    function hideStatus() {
+      statusLine.classList.remove('show', 'success', 'error');
+      statusLine.textContent = '';
+    }
+
+    function showDashboard(mobile) {
+      greetingText.textContent = `Welcome, ${mobile.slice(0, 3)}-${mobile.slice(3, 6)}-${mobile.slice(6)}`;
+      statMobile.textContent = `+91 ${mobile}`;
+      loginSection.style.display = 'none';
+      dashboardSection.classList.add('active');
+      hideStatus();
+    }
+
+    function showLogin() {
+      dashboardSection.classList.remove('active');
+      loginSection.style.display = 'block';
+      hideStatus();
+    }
+
+    function getStoredCredentials() {
+      return {
+        mobile: localStorage.getItem('memoMobile'),
+        password: localStorage.getItem('memoPassword')
+      };
+    }
+
+    function handleLogin() {
+      const mobile = mobileInput.value.trim();
+      const password = passwordInput.value;
+
+      if (!validateMobile(mobile)) {
+        mobileHint.classList.add('active');
+        showStatus('Mobile number must be exactly 10 digits.');
+        return;
       }
-      
-      deferredPrompt = null;
-    } catch (error) {
-      console.error('[PWA] Install error:', error);
-      showManualInstall();
-    }
-  });
+      mobileHint.classList.remove('active');
 
-  // ============================================
-  // MANUAL INSTALL FALLBACK
-  // ============================================
-  
-  function showManualInstall() {
-    status.textContent = '⚠️ Install not available right now';
-    installBanner.classList.add('hidden');
-  }
+      if (!password) {
+        showStatus('Password is required.');
+        return;
+      }
 
-  // ============================================
-  // APP INSTALLED EVENT
-  // ============================================
-  
-  window.addEventListener('appinstalled', () => {
-    console.log('[PWA] App installed event');
-    status.textContent = '✅ App installed successfully! 🎉';
-    status.className = 'status success';
-    installBanner.classList.add('hidden');
-  });
-
-  // ============================================
-  // SERVICE WORKER
-  // ============================================
-  
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-      .then(reg => {
-        console.log('[PWA] Service Worker registered:', reg);
-        if (!deferredPrompt) {
-          status.textContent = '✅ Ready to install! Tap "Install" button';
+      const stored = getStoredCredentials();
+      if (stored.mobile && stored.password) {
+        if (stored.mobile === mobile && stored.password === password) {
+          showStatus('Login successful.', 'success');
+          showDashboard(mobile);
+        } else {
+          showStatus('Mobile number and password do not match saved values.');
         }
-      })
-      .catch(err => {
-        console.error('[PWA] SW Error:', err);
-        status.textContent = '⚠️ Service Worker error';
-      });
-  }
-
-  // ============================================
-  // FALLBACK: Show banner if no prompt after 3s
-  // ============================================
-  
-  setTimeout(() => {
-    if (!deferredPrompt && !isInstalled) {
-      console.log('[PWA] No install prompt available');
-      installBanner.classList.add('hidden');
-      status.textContent = '⚠️ Install not available right now';
+      } else {
+        localStorage.setItem('memoMobile', mobile);
+        localStorage.setItem('memoPassword', password);
+        showStatus('Credentials saved locally. Redirecting to dashboard...', 'success');
+        showDashboard(mobile);
+      }
     }
-  }, 3000);
 
-  console.log('[PWA] Ready');
+    function handleLogout() {
+      localStorage.removeItem('memoMobile');
+      localStorage.removeItem('memoPassword');
+      mobileInput.value = '';
+      passwordInput.value = '';
+      showLogin();
+    }
 
-})();
-</script>
+    loginButton.addEventListener('click', handleLogin);
+    logoutButton.addEventListener('click', handleLogout);
 
+    mobileInput.addEventListener('input', () => {
+      if (validateMobile(mobileInput.value)) {
+        mobileHint.classList.remove('active');
+        hideStatus();
+      }
+    });
+
+    window.addEventListener('load', () => {
+      const stored = getStoredCredentials();
+      if (stored.mobile && stored.password) {
+        showDashboard(stored.mobile);
+      } else {
+        showLogin();
+      }
+    });
+  </script>
 </body>
 </html>
+
