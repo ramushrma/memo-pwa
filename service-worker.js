@@ -1,11 +1,10 @@
-const CACHE_NAME = 'memo-v4';
+const CACHE_NAME = 'memo-v2';
 const urlsToCache = [
   '/',
   '/index.html',
+  '/notes.html',
   '/tasks.html',
-  '/earning.html',
-  '/gallery.html',
-  '/manifest.json',
+  '/about.html',
   '/images.png'
 ];
 
